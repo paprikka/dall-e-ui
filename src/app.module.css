@@ -86,3 +86,44 @@
 .countInput input {
   flex: 1;
 }
+
+.toast {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 47, 0, 0.631);
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+
+  animation: toast 0.4s 0s both;
+}
+
+@keyframes toast {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%);
+  }
+
+  to {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+}
+
+.toast p {
+  margin: 0 0 1rem;
+}
+
+.hgroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: stretch;
+}
+
+.sizes {
+  flex: 1;
+}

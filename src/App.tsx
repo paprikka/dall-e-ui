@@ -1,8 +1,9 @@
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { API } from "./api";
+import { API, Size } from "./api";
 import styles from "./app.module.css";
 import { ImageInput } from "./components/image-input";
 
+const sizes: Size[] = ["256x256", "512x512", "1024x1024"];
 function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem("apiKey") || ""
@@ -28,19 +29,25 @@ function App() {
   >("idle");
 
   const [images, setImages] = useState<string[]>([]);
+  const [error, setError] = useState("");
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!canSubmit) return;
     setRequestState("loading");
-    API.request({ prompt, image, mask, apiKey, n: count })
+    setError("");
+
+    API.request({ prompt, image, mask, apiKey, n: count, size })
       .then((result) => {
         console.log(result);
         setRequestState("idle");
         const urls = result.data.map((_) => _.url);
         setImages([...urls, ...images]);
       })
-      .catch(() => setRequestState("error"));
+      .catch((err: Error) => {
+        setError(err.message);
+        setRequestState("error");
+      });
   };
 
   const [count, setCount] = useState(1);
@@ -50,6 +57,12 @@ function App() {
     const n = parseInt(e.target.value, 10);
     setCount(n);
   };
+
+  const handleToastClose = () => setError("");
+
+  const [size, setSize] = useState<Size>("512x512");
+  const handleSizeChange: ChangeEventHandler<HTMLSelectElement> = (e) =>
+    setSize(e.target.value as Size);
 
   return (
     <main className={styles.container}>
@@ -64,16 +77,27 @@ function App() {
           placeholder="Add your OpenAI API Key here"
         />
         {<progress value={requestState === "loading" ? undefined : "0"} />}
-        <label className={styles.countInput}>
-          Count: {count}
-          <input
-            type="range"
-            min="1"
-            max="12"
-            value={count}
-            onChange={handleNumberChange}
-          />
-        </label>
+        <div className={styles.hgroup}>
+          <label className={styles.countInput}>
+            Count: {count}
+            <input
+              type="range"
+              min="1"
+              max="12"
+              value={count}
+              onChange={handleNumberChange}
+            />
+          </label>
+          <select
+            value={size}
+            className={styles.sizes}
+            onChange={handleSizeChange}
+          >
+            {sizes.map((s) => (
+              <option value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
         <div className={styles.fileInputs}>
           <ImageInput label="Image" value={image} onChange={setImage} />
           <ImageInput label="Mask" value={mask} onChange={setMask} />
@@ -92,6 +116,13 @@ function App() {
           />
         ))}
       </section>
+
+      {error ? (
+        <div className={styles.toast}>
+          <p>{error}</p>
+          <button onClick={handleToastClose}>Close</button>
+        </div>
+      ) : null}
     </main>
   );
 }

@@ -3,6 +3,8 @@ export type OpenAIApiRespose = {
   data: { url: string }[];
 };
 
+export type Size = "256x256" | "512x512" | "1024x1024";
+
 export const API = {
   request: ({
     prompt,
@@ -10,17 +12,19 @@ export const API = {
     mask,
     n,
     apiKey,
+    size,
   }: {
     prompt: string;
     image: File;
     mask: File;
     n: number;
     apiKey: string;
+    size: Size;
   }) => {
     const form = new FormData();
     form.append("prompt", prompt);
     form.append("n", n.toString());
-    form.append("size", "512x512");
+    form.append("size", size);
     form.append("image", image);
     form.append("mask", mask);
 
@@ -33,8 +37,12 @@ export const API = {
 
     options.body = form;
 
-    return fetch("https://api.openai.com/v1/images/edits", options).then(
-      (response) => response.json() as Promise<OpenAIApiRespose>
-    );
+    return fetch("https://api.openai.com/v1/images/edits", options)
+      .then((response) => response.json())
+      .then((res) =>
+        res?.error?.message
+          ? Promise.reject(new Error(res.error.message))
+          : Promise.resolve(res as OpenAIApiRespose)
+      );
   },
 };
