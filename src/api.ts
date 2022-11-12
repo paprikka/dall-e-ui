@@ -6,7 +6,7 @@ export type OpenAIApiRespose = {
 export type Size = "256x256" | "512x512" | "1024x1024";
 
 export const API = {
-  request: ({
+  editImage: ({
     prompt,
     image,
     mask,
@@ -38,6 +38,40 @@ export const API = {
     options.body = form;
 
     return fetch("https://api.openai.com/v1/images/edits", options)
+      .then((response) => response.json())
+      .then((res) =>
+        res?.error?.message
+          ? Promise.reject(new Error(res.error.message))
+          : Promise.resolve(res as OpenAIApiRespose)
+      );
+  },
+  generate: ({
+    prompt,
+    n,
+    apiKey,
+    size,
+  }: {
+    prompt: string;
+    n: number;
+    apiKey: string;
+    size: Size;
+  }) => {
+    const form = JSON.stringify({
+      prompt,
+      n,
+      size,
+    });
+    const options: RequestInit = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    options.body = form;
+
+    return fetch("https://api.openai.com/v1/images/generations", options)
       .then((response) => response.json())
       .then((res) =>
         res?.error?.message

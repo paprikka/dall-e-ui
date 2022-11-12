@@ -4,6 +4,7 @@ import styles from "./app.module.css";
 import { ImageInput } from "./components/image-input";
 
 const sizes: Size[] = ["256x256", "512x512", "1024x1024"];
+type Mode = "generate" | "edit";
 function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem("apiKey") || ""
@@ -37,7 +38,25 @@ function App() {
     setRequestState("loading");
     setError("");
 
-    API.request({ prompt, image, mask, apiKey, n: count, size })
+    if (mode === "edit")
+      return API.editImage({ prompt, image, mask, apiKey, n: count, size })
+        .then((result) => {
+          console.log(result);
+          setRequestState("idle");
+          const urls = result.data.map((_) => _.url);
+          setImages([...urls, ...images]);
+        })
+        .catch((err: Error) => {
+          setError(err.message);
+          setRequestState("error");
+        });
+
+    return API.generate({
+      apiKey,
+      n: count,
+      prompt,
+      size,
+    })
       .then((result) => {
         console.log(result);
         setRequestState("idle");
@@ -51,7 +70,6 @@ function App() {
   };
 
   const [count, setCount] = useState(1);
-  const canSubmit = prompt && prompt.trim() && image && mask && count && apiKey;
 
   const handleNumberChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const n = parseInt(e.target.value, 10);
@@ -64,9 +82,27 @@ function App() {
   const handleSizeChange: ChangeEventHandler<HTMLSelectElement> = (e) =>
     setSize(e.target.value as Size);
 
+  const [mode, setMode] = useState<Mode>("edit");
+  const handleModeChange: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setMask(undefined);
+    setImage(undefined);
+    setMode(e.target.value as Mode);
+  };
+  const canSubmit =
+    mode === "edit"
+      ? prompt && prompt.trim() && image && mask && count && apiKey
+      : prompt && prompt.trim() && apiKey;
+
   return (
     <main className={styles.container}>
       <form className={styles.input} onSubmit={handleSubmit}>
+        <label className={styles.labelledInput}>
+          <span>Mode</span>
+          <select value={mode} onChange={handleModeChange}>
+            <option value="edit">Edit</option>
+            <option value="generate">Generate</option>
+          </select>
+        </label>
         <textarea value={prompt} onChange={handlePromptChange} />
         <input
           type="password"
@@ -98,10 +134,13 @@ function App() {
             ))}
           </select>
         </div>
-        <div className={styles.fileInputs}>
-          <ImageInput label="Image" value={image} onChange={setImage} />
-          <ImageInput label="Mask" value={mask} onChange={setMask} />
-        </div>
+        {mode === "edit" ? (
+          <div className={styles.fileInputs}>
+            <ImageInput label="Image" value={image} onChange={setImage} />
+            <ImageInput label="Mask" value={mask} onChange={setMask} />
+          </div>
+        ) : null}
+
         <button disabled={!canSubmit} type="submit" className={styles.submit}>
           Render
         </button>

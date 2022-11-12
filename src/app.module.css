@@ -77,13 +77,13 @@
   opacity: 0.8;
 }
 
-.countInput {
+.labelledInput {
   display: flex;
   justify-content: stretch;
   gap: 1rem;
 }
 
-.countInput input {
+.labelledInput input {
   flex: 1;
 }
 
