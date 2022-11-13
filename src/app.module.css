@@ -66,6 +66,7 @@
   height: auto;
   cursor: pointer;
   transition: 0.2s opacity;
+  vertical-align: bottom;
   border-radius: 0.25rem;
 }
 
@@ -147,4 +148,57 @@
 
 .sizes {
   flex: 1;
+}
+
+.preview {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  border-radius: 1rem;
+  padding: 0.25rem;
+  font-size: 1rem;
+}
+
+.previewDescription {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.preview img {
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  width: 100vw;
+  max-width: 30rem;
+  vertical-align: bottom;
+}
+
+.previewTools {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  justify-content: space-between;
+}
+
+.previewTools button {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.buttonPrimary {
+  background-color: var(--color-accent-primary);
 }

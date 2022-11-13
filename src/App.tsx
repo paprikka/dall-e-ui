@@ -11,6 +11,12 @@ type APIResult = {
   prompt: string;
 };
 
+type PreviewItem = {
+  url: string;
+  mode: Mode;
+  prompt: string;
+};
+
 function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem("apiKey") || ""
@@ -36,6 +42,22 @@ function App() {
   >("idle");
 
   const [results, setResults] = useState<APIResult[]>([]);
+  /*
+() =>
+    Array(40)
+      .fill(null)
+      .map((_, ind) => ({
+        mode: "edit",
+        prompt:
+          "full page antique botanical atlas drawing of a flower with red petals, white background, art print, highly detailed, 8k, post-processing lorem ipsum #" +
+          (ind + 1),
+        urls: Array(Math.floor(Math.random() * 5))
+          .fill(null)
+          .map(
+            (_, imgInd) => `https://via.placeholder.com/150?text=${imgInd + 1}`
+          ),
+      }))
+*/
   const [error, setError] = useState("");
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
@@ -118,6 +140,15 @@ function App() {
     setColumns(parseInt(e.target.value, 10));
   };
 
+  const [preview, setPreview] = useState<PreviewItem | undefined>();
+
+  const handlePreviewCloseClick = () => setPreview(undefined);
+  const handlePreviewImageClick = (previewItem: PreviewItem) =>
+    setPreview(previewItem);
+
+  const handlePreviewDownloadClick = (preview: PreviewItem) =>
+    window.open(preview.url, "_blank");
+
   return (
     <main className={styles.container}>
       <form className={styles.input} onSubmit={handleSubmit}>
@@ -184,7 +215,13 @@ function App() {
                   <img
                     src={url}
                     alt=""
-                    onClick={() => window.open(url, "_blank")}
+                    onClick={() =>
+                      handlePreviewImageClick({
+                        mode: r.mode,
+                        prompt: r.prompt,
+                        url,
+                      })
+                    }
                   />
                 </li>
               ))
@@ -208,6 +245,25 @@ function App() {
         <div className={styles.toast}>
           <p>{error}</p>
           <button onClick={handleToastClose}>Close</button>
+        </div>
+      ) : null}
+
+      {preview ? (
+        <div className={styles.preview}>
+          <img src={preview.url} alt={preview.prompt} />
+          <p className={styles.previewDescription}>
+            <strong>Prompt: </strong>
+            {preview.prompt}
+          </p>
+          <div className={styles.previewTools}>
+            <button onClick={handlePreviewCloseClick}>close</button>
+            <button
+              className={styles.buttonPrimary}
+              onClick={() => handlePreviewDownloadClick(preview)}
+            >
+              open in new window
+            </button>
+          </div>
         </div>
       ) : null}
     </main>
