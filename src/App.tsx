@@ -5,6 +5,12 @@ import { ImageInput } from "./components/image-input";
 
 const sizes: Size[] = ["256x256", "512x512", "1024x1024"];
 type Mode = "generate" | "edit";
+type APIResult = {
+  urls: string[];
+  mode: Mode;
+  prompt: string;
+};
+
 function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem("apiKey") || ""
@@ -29,7 +35,7 @@ function App() {
     "idle" | "loading" | "error"
   >("idle");
 
-  const [images, setImages] = useState<string[]>([]);
+  const [results, setResults] = useState<APIResult[]>([]);
   const [error, setError] = useState("");
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
@@ -38,13 +44,20 @@ function App() {
     setRequestState("loading");
     setError("");
 
-    if (mode === "edit")
+    if (mode === "edit" && image && mask)
       return API.editImage({ prompt, image, mask, apiKey, n: count, size })
         .then((result) => {
           console.log(result);
           setRequestState("idle");
           const urls = result.data.map((_) => _.url);
-          setImages([...urls, ...images]);
+          setResults([
+            {
+              mode,
+              prompt,
+              urls,
+            },
+            ...results,
+          ]);
         })
         .catch((err: Error) => {
           setError(err.message);
@@ -61,7 +74,14 @@ function App() {
         console.log(result);
         setRequestState("idle");
         const urls = result.data.map((_) => _.url);
-        setImages([...urls, ...images]);
+        setResults([
+          {
+            mode,
+            prompt,
+            urls,
+          },
+          ...results,
+        ]);
       })
       .catch((err: Error) => {
         setError(err.message);
@@ -135,7 +155,9 @@ function App() {
             onChange={handleSizeChange}
           >
             {sizes.map((s) => (
-              <option value={s}>{s}</option>
+              <option value={s} key={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -155,14 +177,19 @@ function App() {
         style={{ "--cols": columns } as React.CSSProperties}
       >
         <ul className={styles.outputContent}>
-          {images.map((img, ind) => (
-            <img
-              src={img}
-              alt=""
-              key={ind}
-              onClick={() => window.open(img, "_blank")}
-            />
-          ))}
+          {results
+            .map((r) =>
+              r.urls.map((url, ind) => (
+                <li key={`${url}_${ind}`}>
+                  <img
+                    src={url}
+                    alt=""
+                    onClick={() => window.open(url, "_blank")}
+                  />
+                </li>
+              ))
+            )
+            .flat()}
         </ul>
         <div className={styles.outputToolbar}>
           <div className={styles.hgroup}>

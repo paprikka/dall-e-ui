@@ -82,6 +82,7 @@
 }
 
 .outputContent {
+  list-style: none;
   position: absolute;
   inset: 0;
   padding: 0;
