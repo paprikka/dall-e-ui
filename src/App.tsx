@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
+import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 import { API, Size } from "./api";
 import styles from "./app.module.css";
 import { ImageInput } from "./components/image-input";
@@ -82,7 +82,7 @@ function App() {
   const handleSizeChange: ChangeEventHandler<HTMLSelectElement> = (e) =>
     setSize(e.target.value as Size);
 
-  const [mode, setMode] = useState<Mode>("edit");
+  const [mode, setMode] = useState<Mode>("generate");
   const handleModeChange: ChangeEventHandler<HTMLSelectElement> = (e) => {
     setMask(undefined);
     setImage(undefined);
@@ -92,6 +92,11 @@ function App() {
     mode === "edit"
       ? prompt && prompt.trim() && image && mask && count && apiKey
       : prompt && prompt.trim() && apiKey;
+
+  const [columns, setColumns] = useState(3);
+  const handleColumnsChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setColumns(parseInt(e.target.value, 10));
+  };
 
   return (
     <main className={styles.container}>
@@ -119,7 +124,7 @@ function App() {
             <input
               type="range"
               min="1"
-              max="12"
+              max="10"
               value={count}
               onChange={handleNumberChange}
             />
@@ -145,15 +150,31 @@ function App() {
           Render
         </button>
       </form>
-      <section className={styles.output}>
-        {images.map((img, ind) => (
-          <img
-            src={img}
-            alt=""
-            key={ind}
-            onClick={() => window.open(img, "_blank")}
-          />
-        ))}
+      <section
+        className={styles.output}
+        style={{ "--cols": columns } as React.CSSProperties}
+      >
+        <ul className={styles.outputContent}>
+          {images.map((img, ind) => (
+            <img
+              src={img}
+              alt=""
+              key={ind}
+              onClick={() => window.open(img, "_blank")}
+            />
+          ))}
+        </ul>
+        <div className={styles.outputToolbar}>
+          <div className={styles.hgroup}>
+            <input
+              type="range"
+              value={columns}
+              min="1"
+              max="10"
+              onChange={handleColumnsChange}
+            />{" "}
+          </div>
+        </div>
       </section>
 
       {error ? (
