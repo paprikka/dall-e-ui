@@ -277,6 +277,16 @@ function App() {
           </div>
         </div>
       ) : null}
+
+      <footer className={styles.footer}>
+        Made with 🐐 by{" "}
+        <a href="https://sonnet.io" target="_blank">
+          Rafal Pastuszak
+        </a>{" "}
+        <a href="https://github.com/paprikka" target="_blank">
+          (source)
+        </a>
+      </footer>
     </main>
   );
 }

@@ -6,7 +6,7 @@
   grid-template-rows: 100%;
   gap: 1rem;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 2.5rem);
 }
 
 .input {
@@ -205,4 +205,17 @@
 
 .buttonPrimary {
   background-color: var(--color-accent-primary);
+}
+
+.footer {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.footer a {
+  text-decoration: underline;
 }
