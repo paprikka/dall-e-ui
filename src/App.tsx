@@ -17,6 +17,10 @@ type PreviewItem = {
   prompt: string;
 };
 
+const Colors = ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93"].map(
+  (c) => c + "aa"
+);
+
 function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem("apiKey") || ""
@@ -205,13 +209,20 @@ function App() {
       </form>
       <section
         className={styles.output}
-        style={{ "--cols": columns } as React.CSSProperties}
+        style={{ "--cols": 6 - columns } as React.CSSProperties}
       >
         <ul className={styles.outputContent}>
           {results
-            .map((r) =>
+            .map((r, rInd) =>
               r.urls.map((url, ind) => (
-                <li key={`${url}_${ind}`}>
+                <li
+                  key={`${url}_${ind}`}
+                  style={
+                    {
+                      "--bs-color": Colors[rInd % Colors.length],
+                    } as React.CSSProperties
+                  }
+                >
                   <img
                     src={url}
                     alt=""
@@ -234,7 +245,7 @@ function App() {
               type="range"
               value={columns}
               min="1"
-              max="10"
+              max="5"
               onChange={handleColumnsChange}
             />{" "}
           </div>

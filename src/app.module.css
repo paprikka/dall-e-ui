@@ -18,7 +18,7 @@
 }
 
 .input textarea {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
   min-height: 6.5rem;
   padding: 0.75rem;
@@ -39,7 +39,7 @@
 }
 
 .apiKey {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 0.5rem;
   color: white;
   border-radius: 0.25rem;
@@ -51,23 +51,44 @@
   box-shadow: 0 0 0 0.25rem rgba(255, 47, 0, 0.631);
 }
 .output {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   padding: 0.75rem;
   position: relative;
 }
 
-.output a {
+.outputContent a {
   display: contents;
 }
 
-.output img {
+.outputContent img {
+  box-shadow: 0 0 0 0.25rem var(--bs-color);
+}
+
+.outputContent img {
   width: 100%;
   height: auto;
   cursor: pointer;
   transition: 0.2s opacity;
   vertical-align: bottom;
   border-radius: 0.25rem;
+}
+
+.outputContent {
+  list-style: none;
+  position: absolute;
+  inset: 0;
+  padding: 0.25rem;
+  margin: 0.75rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-auto-rows: min-content;
+  overflow-y: auto;
+}
+
+.outputContent img:hover {
+  opacity: 0.8;
 }
 
 .outputToolbar {
@@ -80,23 +101,6 @@
   border-radius: 100rem;
 
   backdrop-filter: blur(4px);
-}
-
-.outputContent {
-  list-style: none;
-  position: absolute;
-  inset: 0;
-  padding: 0;
-  margin: 1rem;
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(var(--cols), 1fr);
-  grid-auto-rows: min-content;
-  overflow-y: auto;
-}
-
-.output img:hover {
-  opacity: 0.8;
 }
 
 .labelledInput {
